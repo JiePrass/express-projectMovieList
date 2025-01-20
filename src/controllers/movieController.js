@@ -1,4 +1,4 @@
-const {Movie} = require("../models");
+const {Movie, User, Review} = require("../models");
 
 // Create a new movie (Admin only)
 exports.createMovie = async (req, res) => {
@@ -26,17 +26,36 @@ exports.getAllMovies = async (req, res) => {
 // Get movie by ID (For all users)
 exports.getMovieById = async (req, res) => {
     const { id } = req.params;
-    
+
     try {
-        const movie = await Movie.findByPk(id);
+        // Menambahkan relasi Review dan User (untuk mengambil username)
+        const movie = await Movie.findByPk(id, {
+            include: [
+                {
+                    model: Review,
+                    as: 'reviews',
+                    include: [
+                        {
+                            model: User,  // Memasukkan informasi user (username)
+                            as: 'user',   // Alias yang sudah Anda tentukan di relasi
+                            attributes: ['username']  // Hanya ambil username
+                        }
+                    ]
+                }
+            ]
+        });
+
         if (!movie) {
             return res.status(404).json({ message: "Movie not found!" });
         }
+
         res.status(200).json(movie);
     } catch (error) {
         res.status(500).json({ message: "Error retrieving movie", error });
     }
 };
+
+
 
 // Update a movie (Admin only)
 exports.updateMovie = async (req, res) => {
@@ -76,5 +95,32 @@ exports.deleteMovie = async (req, res) => {
         res.status(200).json({ message: "Movie deleted successfully!" });
     } catch (error) {
         res.status(500).json({ message: "Error deleting movie", error });
+    }
+};
+
+exports.createReview = async (req, res) => {
+    const { movieId } = req.params;
+    const { rating, comment } = req.body;
+    const userId = req.user.id; // Mendapatkan userId dari token
+
+    try {
+        const movie = await Movie.findByPk(movieId);
+        if (!movie) {
+            return res.status(404).json({ message: "Movie not found!" });
+        }
+
+        const review = await Review.create({
+            movieId,
+            userId,  // Menyimpan userId yang ada di token
+            rating,
+            comment
+        });
+
+        res.status(201).json({
+            message: "Review created successfully",
+            review
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Error creating review", error });
     }
 };

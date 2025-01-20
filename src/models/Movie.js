@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-    const Movie = sequelize.define("Movie", {
+    return sequelize.define("Movie", {
         title: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             validate: {
                 min: 1,
-                max: 5
+                max: 5,
             },
         },
         description: {
@@ -25,6 +25,4 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true,
         },
     });
-
-    return Movie;
 };

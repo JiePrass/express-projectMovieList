@@ -1,13 +1,15 @@
 const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../middlewares/authMiddleware");
+const isAdminMiddleware = require("../middlewares/isAdminMiddleware");
 const movieController = require("../controllers/movieController");
 
 // Routes untuk CRUD movie
-router.post("/", authMiddleware, movieController.createMovie); // Admin only
-router.get("/", movieController.getAllMovies); // Semua orang bisa melihat semua movie
-router.get("/:id", movieController.getMovieById); // Semua orang bisa melihat detail movie
-router.patch("/:id", authMiddleware, movieController.updateMovie); // Admin only
-router.delete("/:id", authMiddleware, movieController.deleteMovie); // Admin only
+router.post("/", authMiddleware, isAdminMiddleware, movieController.createMovie);
+router.get("/",  authMiddleware, movieController.getAllMovies);
+router.get("/:id", authMiddleware, movieController.getMovieById);
+router.patch("/:id", authMiddleware, isAdminMiddleware,  movieController.updateMovie);
+router.delete("/:id", authMiddleware, isAdminMiddleware, movieController.deleteMovie);
+router.post("/:movieId/review", authMiddleware, movieController.createReview);
 
 module.exports = router;

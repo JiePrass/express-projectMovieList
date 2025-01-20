@@ -43,7 +43,11 @@ exports.login = async (req, res) => {
             return res.status(401).json({ message: "Password salah!" });
         }
 
-        const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: "1h" });
+        const token = jwt.sign(
+            { id: user.id, username: user.username, role: user.role }, // Menambahkan role ke dalam payload
+            process.env.JWT_SECRET,
+            { expiresIn: "1h" }
+        );
         res.json({ message: "Login berhasil!", token });
     } catch (error) {
         res.status(500).json({ message: "Error saat login", error });
