@@ -4,6 +4,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false,
         },
+        poster: {
+            type: DataTypes.STRING,
+            allowNull: true, // Opsional jika tidak wajib
+        },
         director: {
             type: DataTypes.STRING,
             allowNull: false,
