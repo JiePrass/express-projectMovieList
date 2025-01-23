@@ -109,7 +109,14 @@ exports.deleteMovie = async (req, res) => {
     const { id } = req.params;
 
     try {
-        const movie = await Movie.findByPk(id);
+        const movie = await Movie.findByPk(id, {
+            include: [
+                {
+                    model: Review, // Pastikan ada relasi dengan Review
+                    as: 'reviews' // Pastikan nama alias relasi sesuai
+                }
+            ]
+        });
         if (!movie) {
             return res.status(404).json({ message: "Movie not found!" });
         }
@@ -120,12 +127,23 @@ exports.deleteMovie = async (req, res) => {
             fs.unlinkSync(`public/posters/${movie.poster}`);
         }
 
+        // Hapus semua review yang terkait dengan movie ini
+        if (movie.reviews.length > 0) {
+            await Review.destroy({
+                where: {
+                    movieId: movie.id
+                }
+            });
+        }
+
+        // Hapus movie
         await movie.destroy();
         res.status(200).json({ message: "Movie deleted successfully!" });
     } catch (error) {
         res.status(500).json({ message: "Error deleting movie", error });
     }
 };
+
 
 
 exports.createReview = async (req, res) => {
