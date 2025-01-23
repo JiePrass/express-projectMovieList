@@ -54,3 +54,13 @@ exports.login = async (req, res) => {
     }
 };
 
+exports.logout = async (req, res) => {
+    try {
+        // Untuk logout, kita cukup menghapus token dari sisi klien
+        res.status(200).json({ message: "Logout berhasil!" });
+    } catch (error) {
+        res.status(500).json({ message: "Error saat logout", error });
+    }
+};
+
+

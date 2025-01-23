@@ -1,14 +1,16 @@
 require('dotenv').config();
-const authRoutes = require("./routes/auth");
-const movieRoutes = require("./routes/movie");
-
 const express = require("express");
 const path = require("path");
+const cors = require('cors');
 const PORT = process.env.PORT;
+
+const authRoutes = require("./routes/auth");
+const movieRoutes = require("./routes/movie");
 
 const app = express();
 
 app.use(express.json());
+app.use(cors());
 
 // Acces Poster
 app.use('/posters', express.static(path.join(__dirname, '..' ,'public', 'posters')));
